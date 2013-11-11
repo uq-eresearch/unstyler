@@ -21,4 +21,5 @@ describe '.unstyle', () ->
       encoding: 'UTF-8'
     }, (err, html) ->
       throw err if (err)
-      expect(unstyle(html)).not.to.equal(html) 
+      expect(unstyle(html)).not.to.equal(html)
+      #console.log(unstyle(html))

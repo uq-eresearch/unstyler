@@ -1,13 +1,12 @@
 ((exports) ->
 
   foldLeft = (iterable, zero, f) ->
-    typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
     foldLeftArray = (iterable, zero, f) ->
-      if iterable.length == 0
-        zero
-      else
-        foldLeftArray(iterable[1..],  f(zero, iterable[0]), f)
-    if typeIsArray(iterable)
+      memo = zero
+      for n in iterable
+        memo = f(memo, n)
+      memo
+    if iterable instanceof Array
       foldLeftArray(iterable, zero, f)
     else
       fPair = (zero, pair) -> f(zero, pair[1], pair[0])
@@ -16,33 +15,44 @@
   # Based on Jeff Atwood's "Cleaning Word's Nasty HTML"
   # http://www.codinghorror.com/blog/2006/01/cleaning-words-nasty-html.html
   removalPatterns = [
+    # nothing useful comes after </html>
+    /(?:<\/html>)[\s\S]+/
     # get rid of unnecessary tag spans (comments and title)
-    '<!--(\w|\W)+?-->'
-    '<title>(\w|\W)+?<\/title>'
+    /<!--(\w|\W)+?-->/
+    /<title>(\w|\W)+?<\/title>/
     # Get rid of classes and styles
-    '\s?class=\w+'
-    "\s+style='[^']+'"
+    /\s?class=([\'"][^\'"]*[\'"]|\w+)/
+    /\s+style='[^']+'/
     # Get rid of unnecessary tags
-    '<(meta|link|/?o:|/?style|/?div|/?st\d|/?head|/?html|body|/?body|/?span|!\\[)[^>]*?>'
+    /<(meta|link|\/?o:|\/?style|\/?div|\/?st\d|\/?head|\/?html|body|\/?body|\/?span|!\[)[^>]*?>/
     # Get rid of empty paragraph tags
-    '(<[^>]+>)+&nbsp;(</\w+>)+'
+    /(<[^>]+>)+&nbsp;(<\/\w+>)+/
     # remove bizarre v: element attached to <img> tag
-    '\s+v:\w+=""[^""]+""'
+    /\s+v:\w+=""[^""]+""/
     # remove extra lines
-    '(\n\r){2,}'
+    /(\n\r){2,}/
   ]
 
-  replacementPatterns = {
-    'Ã¢â‚¬â€œ': "&mdash;"
-  }
+  replacementPatterns = [
+    [/Ã¢â‚¬â€œ/, "&mdash;"]
+    # Turn textual ordered list points into real ones
+    [/(?:<p>\d+\.)(?:&nbsp;\s*)+([^<]+)<\/p>/, "<ol><li>$1</li></ol>"]
+    # Turn textual unordered list points into real ones
+    [/(?:<p>[·o])(?:&nbsp;\s*)+([^<]+)<\/p>/, "<ul><li>$1</li></ul>"]
+    # Replace bold with strong
+    [/<b>([\s\S]*)<\/b>/, "<strong>$1</strong>"]
+    # Replace italic with em
+    [/<i>([\s\S]*)<\/i>/, "<em>$1</em>"]
+  ]
 
   removeElements = (html) ->
-    foldLeft removalPatterns, html, (text, pattern) ->
-      text.replace(new RegExp(pattern, 'g'), '')
+    foldLeft removalPatterns, html, (text, regex) ->
+      text.replace(RegExp(regex.source, 'mg'), '')
 
   replaceElements = (html) ->
-    foldLeft replacementPatterns, html, (text, replacement, pattern) ->
-      text.replace(new RegExp(pattern, 'g'), replacement)
+    foldLeft replacementPatterns, html, (text, pair) ->
+      [regex, replacement] = pair
+      text.replace(new RegExp(regex.source, 'mg'), replacement)
 
   unstyle = (html) ->
     replaceElements(removeElements(html))
