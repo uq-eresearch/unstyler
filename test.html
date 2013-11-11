@@ -1,0 +1,26 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="./build/unstyler.js"></script>
+<script type="text/javascript">
+$(function() {
+  $('#input').on('keyup', function(e) {
+    var sanitized = unstyler.unstyle($(e.target).val());
+    console.log(sanitized);
+    $('#output').html(sanitized);
+  });
+});
+</script>
+<style type="text/css">
+#input, #output {
+  float: left;
+  width: 50%;
+  min-height: 100%;
+}
+</style>
+<body>
+<textarea id="input"></textarea>
+<div id="output">
+</div>
+</body>
+</html>

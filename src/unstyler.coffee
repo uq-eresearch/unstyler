@@ -11,13 +11,106 @@
     else
       fPair = (zero, pair) -> f(zero, pair[1], pair[0])
       foldLeftArray([k, v] for k, v of iterable, zero, fPair)
-
+      
+  takeWhile = (iterable, f) ->
+    l = []
+    for i in iterable
+      if f(i)
+        l.push(i)
+      else
+        break
+    l
+        
   replaceOp = (regex, replacement) -> (text) ->
     text.replace(new RegExp(regex.source, 'mg'), replacement)
 
   removeOp = (regex) -> (text) ->
     text.replace(new RegExp(regex.source, 'mg'), '')
 
+  locateLists = (text) ->
+    # Find a MS Word paragraphs that are actually list items
+    re = /<p[^>]+style='[^']*mso-list\:[\s\S]+?<\/p>/m
+    indexes = []
+    i = 0
+    while (m = text[i..].match(re))
+      matchStr = m[0]
+      foundAt = i + m.index
+      untilIndex = foundAt + matchStr.length
+      msoList = matchStr.match(/l(\d+) level(\d+)/)
+      rootId = parseInt(msoList[1])
+      depth = parseInt(msoList[2])
+      listType =
+        if (/^<p[^>]*>\d+\.(&nbsp;\s*)+/.test(text[foundAt...untilIndex]))
+          'ol'
+        else
+          'ul'
+      indexes.push {
+        start: foundAt
+        end: untilIndex
+        type: listType
+        root: rootId
+        depth: depth
+      }
+      i = untilIndex
+    indexes
+    
+  convertLists = (text) ->
+    # Create function to insert string at index
+    insertOp = (i, str) -> 
+      # Function which inserts the string at the specified index
+      f = (t) -> t[0..(i-1)] + str + t[i..]
+      # Override toString so debugging is easier
+      f.toString = () -> "Insert @ "+i+": "+str
+      # Return function
+      f
+    # Return string repeated specified times
+    repeat = (str, times) ->
+      if (times <= 0) then '' else str + repeat(str, times - 1)
+    openListOp = (indexes) ->
+      insertOp(indexes[0].start, "<"+indexes[0].type+">")
+    closeListOp = (indexes) ->
+      insertOp(indexes[indexes.length - 1].end, "</"+indexes[0].type+">")
+    # Handle increasing depth for lists by checking for depth increases
+    # for second-element onwards and recursively handling.
+    partitionDepths = (l) ->
+      if l.length == 0
+        []
+      else
+        differentDepth = takeWhile(l[1..], (i) -> l[0].depth != i.depth)
+        if differentDepth.length == 0
+          (new Array()).concat(
+            [insertOp(l[0].start, "<li>"), insertOp(l[0].end, "</li>")],
+            partitionDepths(l[1..]))
+        else
+          (new Array()).concat(
+            [insertOp(l[0].start, "<li>"),
+             openListOp(differentDepth)],
+            partitionDepths(differentDepth),
+            [closeListOp(differentDepth),
+             insertOp(differentDepth[differentDepth.length-1].end, "</li>")],
+            partitionDepths(l[(differentDepth.length+1)..]))
+    # Get insertions by breaking up lists by root ID
+    partitionRoots = (l) ->
+      if l.length == 0
+        []
+      else
+        sameRoot = takeWhile(l, (i) -> l[0].root == i.root)
+        (new Array()).concat(
+          [openListOp(sameRoot)],
+          partitionDepths(sameRoot),
+          [closeListOp(sameRoot)],
+          partitionRoots(l[(sameRoot.length)..]))
+    # Find a MS Word paragraphs that are actually list items
+    indexes = locateLists(text)
+    if (indexes.length == 0)
+      text
+    else
+      # Assemble insertion actions to perform
+      insertions = partitionRoots(indexes)
+      # Apply insertions in reverse, so indexes remain valid
+      foldLeft insertions.reverse(), text, (text, f) ->
+        f(text)
+    
   # Based on Jeff Atwood's "Cleaning Word's Nasty HTML"
   # http://www.codinghorror.com/blog/2006/01/cleaning-words-nasty-html.html
   operations = [
@@ -26,11 +119,6 @@
     # get rid of unnecessary tag spans (comments and title)
     removeOp(/<!--(\w|\W)+?-->/)
     removeOp(/<title>(\w|\W)+?<\/title>/)
-    #extract "mso-list" style to attributes
-    #replaceOp(/(\s+style='[^']*)(?:mso-list\:([^;]+));?([^']+')/, " mso-list='$2' $1$3")
-    # Get rid of classes and styles
-    removeOp(/\s?class=([\'"][^\'"]*[\'"]|\w+)/)
-    removeOp(/\s+style='[^']+'/)
     # Get rid of unnecessary tags
     removeOp(/<(meta|link|\/?o:|\/?style|\/?div|\/?st\d|\/?head|\/?html|body|\/?body|\/?span|!\[)[^>]*?>/)
     # Get rid of empty paragraph tags
@@ -41,10 +129,15 @@
     removeOp(/(\n\r){2,}/)
     # Fix mdash
     replaceOp(/Ã¢â‚¬â€œ/, "&mdash;")
-    # Turn textual ordered list points into real ones
-    replaceOp(/(?:<p>\d+\.)(?:&nbsp;\s*)+([^<]+)<\/p>/, "<ol><li>$1</li></ol>")
-    # Turn textual unordered list points into real ones
-    replaceOp(/(?:<p>[·o])(?:&nbsp;\s*)+([^<]+)<\/p>/, "<ul><li>$1</li></ul>")
+    #extract "mso-list" style to attributes
+    convertLists
+    # Filter textual ordered list points (real ones should now exist)
+    replaceOp(/(?:<p[^>]*>(?:(?:&nbsp;)+\s*)?[a-z0-9]+\.)(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
+    # Filter textual unordered list points (real ones should now exist)
+    replaceOp(/(?:<p[^>]*>[·o])(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
+    # Get rid of classes and styles
+    removeOp(/\s?class=([\'"][^\'"]*[\'"]|\w+)/)
+    removeOp(/\s+style='[^']+'/)
     # Replace bold with strong
     replaceOp(/<b>([\s\S]*)<\/b>/, "<strong>$1</strong>")
     # Replace italic with em

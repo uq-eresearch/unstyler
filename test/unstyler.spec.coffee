@@ -22,4 +22,3 @@ describe '.unstyle', () ->
     }, (err, html) ->
       throw err if (err)
       expect(unstyle(html)).not.to.equal(html)
-      #console.log(unstyle(html))
