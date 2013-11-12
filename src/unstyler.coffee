@@ -1,4 +1,11 @@
-(() ->
+###!
+# Copyright (c) 2013 The University of Queensland
+# (UQ ITEE e-Research Group)
+###
+"use strict"
+((exportFunc) ->
+  
+  # Implementing foldLeft so we can apply lists of operations
   foldLeft = (iterable, zero, f) ->
     foldLeftArray = (iterable, zero, f) ->
       memo = zero
@@ -10,7 +17,8 @@
     else
       fPair = (zero, pair) -> f(zero, pair[1], pair[0])
       foldLeftArray([k, v] for k, v of iterable, zero, fPair)
-      
+  
+  # Another common utility function that's very useful for handling lists
   takeWhile = (iterable, f) ->
     l = []
     for i in iterable
@@ -20,14 +28,16 @@
         break
     l
         
+  # Higher order function for text replacement operations
   replaceOp = (regex, replacement) -> (text) ->
     text.replace(new RegExp(regex.source, 'mg'), replacement)
 
+  # Higher order function for text removal operations
   removeOp = (regex) -> (text) ->
     text.replace(new RegExp(regex.source, 'mg'), '')
 
+  # Find a MS Word paragraphs that are actually list items
   locateLists = (text) ->
-    # Find a MS Word paragraphs that are actually list items
     re = /<p[^>]+style='[^']*mso-list\:[\s\S]+?<\/p>/m
     indexes = []
     i = 0
@@ -52,7 +62,8 @@
       }
       i = untilIndex
     indexes
-    
+  
+  # Convert MS Word lists to actual HTML lists. Handles nesting.
   convertLists = (text) ->
     # Create function to insert string at index
     insertOp = (i, str) -> 
@@ -62,6 +73,7 @@
       f.toString = () -> "Insert @ "+i+": "+str
       # Return function
       f
+    # Specialized versions of insertOp
     openListOp = (indexes) ->
       insertOp(indexes[0].start, "<"+indexes[0].type+">")
     closeListOp = (indexes) ->
@@ -152,11 +164,16 @@
   unstylerModule.foldLeft = foldLeft
   unstylerModule.takeWhile = takeWhile
 
+  exportFunc(unstylerModule)
+)(
   # Export module appropriately for environment
   if exports ? false
     # Node.js
-    module.exports = unstylerModule
-  else
+    (m) -> module.exports = m
+  else if window ? false
     # Browser
-    this['unstyle'] = unstylerModule
-)()
+    (m) -> window.unstyle = m
+  else
+    # As return value
+    (m) -> m
+)

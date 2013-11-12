@@ -35,7 +35,7 @@ module.exports = function(grunt) {
     watch: {
       main: {
         files: 'src/**/*.coffee',
-        tasks: ['test', 'coffee'],
+        tasks: ['default'],
         options: {
           spawn: true
         }
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-simple-mocha');
 
-  grunt.registerTask('default', ['coffee', 'test', 'uglify', 'docco']);
+  grunt.registerTask('default', ['test', 'coffee', 'uglify', 'docco']);
   grunt.registerTask('test', ['coffee:test', 'simplemocha']);
 
 };

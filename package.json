@@ -1,6 +1,7 @@
 {
   "name": "unstyler",
   "version": "0.0.1",
+  "repository": "https://github.com/tjdett/unstyler.git",
   "licenses": [
     {
       "type": "MIT",
