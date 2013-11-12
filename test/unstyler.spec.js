@@ -9,9 +9,9 @@
 
   foldLeft = require(__dirname + "/../src/unstyler.coffee").foldLeft;
 
-  unstyle = require(__dirname + "/../src/unstyler.coffee").unstyle;
+  unstyle = require(__dirname + "/../src/unstyler.coffee");
 
-  describe('.foldLeft', function() {
+  describe('.unstyle.foldLeft', function() {
     return it('just testing it works', function() {
       expect(foldLeft([1, 2, 3, 4, 5], 0, function(m, n) {
         return m + n;
@@ -36,10 +36,20 @@
       return fs.readFile(__dirname + '/fixture/word.html', {
         encoding: 'UTF-8'
       }, function(err, html) {
+        var unstyledHtml;
         if (err) {
           throw err;
         }
-        return expect(unstyle(html)).not.to.equal(html);
+        unstyledHtml = unstyle(html);
+        expect(unstyledHtml).not.to.equal(html);
+        expect(unstyledHtml).to.contain("<strong>facilisis mollis sem</strong>");
+        expect(unstyledHtml).to.contain("<em>purus vestibulum at</em>");
+        expect(unstyledHtml).to.contain("<ul><li>Vestibulum");
+        expect(unstyledHtml).to.contain("<ul><li>Aliquam");
+        expect(unstyledHtml).to.contain("varius congue.</li></ul></li>");
+        expect(unstyledHtml).to.contain("<li>Interdum");
+        expect(unstyledHtml).to.contain("<ul><li>Sed sit amet ornare leo.");
+        return expect(unstyledHtml).to.contain("egestas urna.</li></ul></li></ul>");
       });
     });
   });

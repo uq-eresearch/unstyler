@@ -1,5 +1,4 @@
-((exports) ->
-
+(() ->
   foldLeft = (iterable, zero, f) ->
     foldLeftArray = (iterable, zero, f) ->
       memo = zero
@@ -142,12 +141,24 @@
     replaceOp(/<b>([\s\S]*)<\/b>/, "<strong>$1</strong>")
     # Replace italic with em
     replaceOp(/<i>([\s\S]*)<\/i>/, "<em>$1</em>")
+    # Convert remaining new lines to spaces
+    replaceOp(/(\r\n)/, ' ')
   ]
 
   unstyle = (html) ->
     foldLeft operations, html, (text, f) ->
       f(text)
 
-  exports.foldLeft = foldLeft
-  exports.unstyle = unstyle
-)(exports ? this['unstyler'] = {});
+  # Export module as a single function
+  unstylerModule = unstyle 
+  # Include utility functions for testing
+  unstylerModule.foldLeft = foldLeft
+
+  # Export module appropriately for environment
+  if exports ? false
+    # Node.js
+    module.exports = unstylerModule
+  else
+    # Browser
+    this['unstyle'] = unstylerModule
+)()

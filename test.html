@@ -5,7 +5,7 @@
 <script type="text/javascript">
 $(function() {
   $('#input').on('keyup', function(e) {
-    var sanitized = unstyler.unstyle($(e.target).val());
+    var sanitized = unstyle($(e.target).val());
     console.log(sanitized);
     $('#output').html(sanitized);
   });
