@@ -1,6 +1,6 @@
 {
   "name": "unstyler",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "\"Paste from Word\" as a library.",
   "repository": "https://github.com/tjdett/unstyler.git",
   "licenses": [
