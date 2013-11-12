@@ -1,0 +1,39 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="./build/unstyler.min.js"></script>
+<script type="text/javascript">
+$(function() {
+  $('textarea#text').on('paste', function(e) {
+    e.preventDefault();
+    var clipboard = e.originalEvent.clipboardData;
+    var html = clipboard.getData("text/html") || clipboard.getData("text/plain");
+    $(e.target).val(unstyle(html));
+  });
+  $('div#html').on('paste', function(e) {
+    e.preventDefault();
+    var clipboard = e.originalEvent.clipboardData;
+    var html = clipboard.getData("text/html") || clipboard.getData("text/plain");
+    $(e.target).html(unstyle(html));
+  });
+  $('#text').on('keyup', function(e) {
+    $('#html').html($(e.target).val());
+  });
+  $('#html').on('keyup', function(e) {
+    $('#text').val($(e.target).html());
+  });
+});
+</script>
+<style type="text/css">
+#text, #html {
+  float: left;
+  width: 50%;
+  min-height: 100%;
+}
+</style>
+<body>
+<textarea id="text" placeholder="Paste HTML as text here"></textarea>
+<div id="html" contentEditable="true" title="You can also paste HTML here">
+</div>
+</body>
+</html>
