@@ -1,6 +1,8 @@
 ###!
 # Copyright (c) 2013 The University of Queensland
 # (UQ ITEE e-Research Group)
+#
+# MIT Licensed
 ###
 "use strict"
 ((exportFunc) ->

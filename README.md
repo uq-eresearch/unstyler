@@ -40,5 +40,7 @@ $('div#html').on('paste', function(e) {
 });
 ```
 
+## Licence
 
+MIT
 
