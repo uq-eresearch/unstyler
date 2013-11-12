@@ -3,13 +3,17 @@
 fs = require('fs')
 expect = require('chai').expect
 coffeescript = require("coffee-script")
-foldLeft = require(__dirname+"/../src/unstyler.coffee").foldLeft
 unstyle = require(__dirname+"/../src/unstyler.coffee")
 
 describe '.unstyle.foldLeft', () ->
-  it 'just testing it works', () ->
+  it 'should act like normal FP foldLeft', () ->
+    foldLeft = unstyle.foldLeft
     expect(foldLeft [1,2,3,4,5], 0, (m, n) -> m + n).to.equal(15)
     expect(foldLeft {1: 7, 3: 4, 5: 3}, 0, (m, v, k) -> m + v - k).to.equal(5)
+    
+describe '.unstyle.takeWhile', () ->
+  it 'should return elements prior to the first that is false', () ->
+    expect(unstyle.takeWhile [1,2,3,4,2], (n) -> n < 4).to.deep.equal([1,2,3])
 
 describe '.unstyle', () ->
   it 'should leave clean html alone', () ->

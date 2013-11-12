@@ -62,9 +62,6 @@
       f.toString = () -> "Insert @ "+i+": "+str
       # Return function
       f
-    # Return string repeated specified times
-    repeat = (str, times) ->
-      if (times <= 0) then '' else str + repeat(str, times - 1)
     openListOp = (indexes) ->
       insertOp(indexes[0].start, "<"+indexes[0].type+">")
     closeListOp = (indexes) ->
@@ -153,6 +150,7 @@
   unstylerModule = unstyle 
   # Include utility functions for testing
   unstylerModule.foldLeft = foldLeft
+  unstylerModule.takeWhile = takeWhile
 
   # Export module appropriately for environment
   if exports ? false

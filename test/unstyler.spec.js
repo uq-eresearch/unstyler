@@ -1,5 +1,5 @@
 (function() {
-  var coffeescript, expect, foldLeft, fs, unstyle;
+  var coffeescript, expect, fs, unstyle;
 
   fs = require('fs');
 
@@ -7,12 +7,12 @@
 
   coffeescript = require("coffee-script");
 
-  foldLeft = require(__dirname + "/../src/unstyler.coffee").foldLeft;
-
   unstyle = require(__dirname + "/../src/unstyler.coffee");
 
   describe('.unstyle.foldLeft', function() {
-    return it('just testing it works', function() {
+    return it('should act like normal FP foldLeft', function() {
+      var foldLeft;
+      foldLeft = unstyle.foldLeft;
       expect(foldLeft([1, 2, 3, 4, 5], 0, function(m, n) {
         return m + n;
       })).to.equal(15);
@@ -23,6 +23,14 @@
       }, 0, function(m, v, k) {
         return m + v - k;
       })).to.equal(5);
+    });
+  });
+
+  describe('.unstyle.takeWhile', function() {
+    return it('should return elements prior to the first that is false', function() {
+      return expect(unstyle.takeWhile([1, 2, 3, 4, 2], function(n) {
+        return n < 4;
+      })).to.deep.equal([1, 2, 3]);
     });
   });
 
