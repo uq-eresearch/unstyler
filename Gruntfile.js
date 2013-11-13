@@ -9,7 +9,7 @@ module.exports = function(grunt) {
           sourceMap: true
         },
         files: {
-          'build/<%= pkg.name %>.js': ['src/*.coffee']
+          'lib/<%= pkg.name %>.js': ['src/*.coffee']
         }
       },
       test: {
@@ -65,11 +65,11 @@ module.exports = function(grunt) {
       },
       build: {
         options: {
-          sourceMapIn: 'build/<%= pkg.name %>.map',
+          sourceMapIn: 'lib/<%= pkg.name %>.map',
           sourceMap: 'build/<%= pkg.name %>.min.map'
         },
         files: {
-          'build/<%= pkg.name %>.min.js': 'build/<%= pkg.name %>.js'
+          'build/<%= pkg.name %>.min.js': 'lib/<%= pkg.name %>.js'
         }
       }
     }

@@ -1,8 +1,30 @@
 {
   "name": "unstyler",
   "version": "0.2.0",
-  "description": "\"Paste from Word\" as a library.",
-  "repository": "https://github.com/uq-eresearch/unstyler.git",
+  "homepage": "http://uq-eresearch.github.io/unstyler/",
+  "description": "\"Paste from Word\" as a library",
+  "contributors": [
+    {
+      "name": "Tim Dettrick",
+      "email": "t.dettrick@uq.edu.au"
+    }
+  ],
+  "main": "lib/unstyler.js",
+  "scripts": {
+    "build": "grunt",
+    "prepublish": "grunt coffee",
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uq-eresearch/unstyler.git"
+  },
+  "keywords": [
+    "clean",
+    "html",
+    "office",
+    "word"
+  ],
   "licenses": [
     {
       "type": "MIT",
@@ -19,8 +41,5 @@
     "grunt-contrib-uglify": "0.2.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-simple-mocha": "0.4.0"
-  },
-  "scripts": {
-    "test": "grunt test"
   }
 }
