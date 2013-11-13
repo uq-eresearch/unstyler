@@ -2,7 +2,7 @@
   "name": "unstyler",
   "version": "0.2.0",
   "description": "\"Paste from Word\" as a library.",
-  "repository": "https://github.com/tjdett/unstyler.git",
+  "repository": "https://github.com/uq-eresearch/unstyler.git",
   "licenses": [
     {
       "type": "MIT",
