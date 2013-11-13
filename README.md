@@ -1,6 +1,6 @@
-# Unstyler.js
+# unstyler.js
 
-[![Build Status](https://travis-ci.org/tjdett/unstyler.png?branch=master)](https://travis-ci.org/tjdett/unstyler)
+[![Build Status](https://travis-ci.org/uq-eresearch/unstyler.png?branch=master)](https://travis-ci.org/uq-eresearch/unstyler)
 
 So, that point in your project comes, and you need to handle copy & paste from
 Microsoft Word. At first, it looks great... and then you look at the HTML!
