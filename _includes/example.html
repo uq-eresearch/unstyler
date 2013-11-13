@@ -1,0 +1,78 @@
+<script src="https://github.com/uq-eresearch/unstyler/releases/download/v{{site.currentVersion}}/unstyler.min.js"></script>
+<div class="row">
+  <div class="col-xs-12 col-md-6">
+  <textarea id="ugly-html"
+    placeholder="Paste some ugly HTML here"
+    style="height: 340px; width: 100%">
+&lt;p class=MsoNormal&gt;Nullam neque justo, ullamcorper eget libero vestibulum, &lt;b
+style='mso-bidi-font-weight:normal'&gt;facilisis mollis sem&lt;/b&gt;. In blandit
+pulvinar nibh, et accumsan &lt;i style='mso-bidi-font-style:normal'&gt;purus
+vestibulum at&lt;/i&gt;.&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;
+
+&lt;p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt;mso-list:l2 level1 lfo1'&gt;&lt;![if !supportLists]&gt;&lt;span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'&gt;&lt;span style='mso-list:Ignore'&gt;&#x00b7;&lt;span style='font:7.0pt &quot;Times New Roman&quot;'&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;![endif]&gt;Vestibulum sed bibendum leo, non dictum tortor.
+Nunc tincidunt ut ipsum ac faucibus. Maecenas ut feugiat odio. Pellentesque
+semper nulla est, eu aliquam leo luctus at.&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;
+
+&lt;p class=MsoListParagraphCxSpMiddle style='margin-left:72.0pt;mso-add-space:
+auto;text-indent:-18.0pt;mso-list:l2 level2 lfo1'&gt;&lt;![if !supportLists]&gt;&lt;span
+style='font-family:&quot;Courier New&quot;;mso-fareast-font-family:&quot;Courier New&quot;'&gt;&lt;span
+style='mso-list:Ignore'&gt;o&lt;span style='font:7.0pt &quot;Times New Roman&quot;'&gt;&amp;nbsp;&amp;nbsp;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;![endif]&gt;Aliquam mattis accumsan dictum. Praesent ac
+sagittis tellus, nec pretium sapien. Proin viverra ante id varius congue.&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;
+
+&lt;p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt;mso-list:l2 level1 lfo1'&gt;&lt;![if !supportLists]&gt;&lt;span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'&gt;&lt;span style='mso-list:Ignore'&gt;&#x00b7;&lt;span style='font:7.0pt &quot;Times New Roman&quot;'&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;![endif]&gt;Interdum et malesuada fames ac ante ipsum primis
+in faucibus.&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;
+
+&lt;p class=MsoListParagraphCxSpLast style='margin-left:72.0pt;mso-add-space:auto;
+text-indent:-18.0pt;mso-list:l2 level2 lfo1'&gt;&lt;![if !supportLists]&gt;&lt;span
+style='font-family:&quot;Courier New&quot;;mso-fareast-font-family:&quot;Courier New&quot;'&gt;&lt;span
+style='mso-list:Ignore'&gt;o&lt;span style='font:7.0pt &quot;Times New Roman&quot;'&gt;&amp;nbsp;&amp;nbsp;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;![endif]&gt;Sed sit amet ornare leo. Maecenas suscipit
+lectus turpis, eget condimentum justo lobortis quis. Vestibulum posuere mollis
+nulla eget egestas. Curabitur sit amet egestas urna.&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;
+  </textarea>
+  </div>
+  <div class="col-xs-12 col-md-6">
+  <pre id="clean-html-source" class="pre-scrollable"
+    rel="tooltip"
+    style="cursor: pointer;"
+    title="Click to show rendered">
+  
+  </pre>
+  <p id="clean-html"
+    rel="tooltip"
+    title="Click to show source"
+    style="height: 340px; width: 100%; overflow: auto; cursor: pointer;">
+  
+  </p>
+  </div>
+</div>
+<script type="text/javascript">
+$(function() {
+  // Set up 
+  var updateCleanHtml = function() {
+    // This is where we get our clean HTML
+    var result = unstyle($('#ugly-html').val());
+    // Update display
+    $('#clean-html-source').text(result);
+    $('#clean-html').html(result);
+  };
+  // Allow people to enter their own ugly HTML
+  $('#ugly-html').on('keyup', updateCleanHtml);
+  // Run the first time
+  updateCleanHtml();
+  // Provide toggling between clean source and HTML
+  $('#clean-html, #clean-html-source').on('click', function() {
+    $('#clean-html, #clean-html-source').toggle();
+  })
+  $('#clean-html-source').hide();
+  // Explanitory tooltips
+  $('[rel=tooltip]').tooltip();
+});
+</script>
