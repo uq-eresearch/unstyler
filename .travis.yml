@@ -2,4 +2,12 @@ language: node_js
 node_js:
   - 0.10
 before_script:
-  - npm install -g grunt-cli
+- npm install -g grunt-cli
+deploy:
+  provider: npm
+  email: t.dettrick@uq.edu.au
+  api_key:
+    secure: ukHU0YYxNYH1VL+zrYZxGjld/jfqcsdk6rE4+997N/MMixk/veqvpvKXceEY/cvdxww8KfPJ/PisTueWdsdwoGJrAXRtST+nWHeHx7lNS3v34jNSwSFZ51gtWKtrtmYlcHtZXUIyuHxya4BuhAS0Z+ARHlOWr+qRhhrB8F/n2s8=
+  on:
+    tags: true
+    repo: uq-eresearch/unstyler
