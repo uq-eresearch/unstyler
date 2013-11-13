@@ -19,8 +19,12 @@ describe '.unstyle', () ->
   it 'should leave clean html alone', () ->
     html = '<ul><li>a</li><li>b</li></ul>'
     expect(unstyle(html)).to.equal(html)
+    
+  it 'should leave preformatted text alone', () ->
+    html = '<ul><li><pre>a\n \nb\n</pre></li></ul>'
+    expect(unstyle(html)).to.equal(html)
   
-  it 'should unmangle the test document', () ->
+  it 'should unmangle modern Word HTML', () ->
     fs.readFile __dirname+'/fixture/word.html', { 
       encoding: 'UTF-8'
     }, (err, html) ->
@@ -30,7 +34,7 @@ describe '.unstyle', () ->
       # Check bold tags are converted to <strong>
       expect(unstyledHtml).to.contain("<strong>facilisis mollis sem</strong>")
       # Check italic tags are converted to <em>
-      expect(unstyledHtml).to.contain("<em>purus vestibulum at</em>")
+      expect(unstyledHtml).to.contain("<em>purus\nvestibulum at</em>")
       # Check that nested bullets are nested properly
       expect(unstyledHtml).to.contain("<ul><li>Vestibulum")
       expect(unstyledHtml).to.contain("<ul><li>Aliquam")
@@ -38,3 +42,29 @@ describe '.unstyle', () ->
       expect(unstyledHtml).to.contain("<li>Interdum")
       expect(unstyledHtml).to.contain("<ul><li>Sed sit amet ornare leo.")
       expect(unstyledHtml).to.contain("egestas urna.</li></ul></li></ul>")
+  
+  it 'should unmangle older Word HTML with upper-case tags', () ->
+    fs.readFile __dirname+'/fixture/emule.html', { 
+      encoding: 'UTF-8'
+    }, (err, html) ->
+      throw err if (err)
+      unstyledHtml = unstyle(html)
+      expect(unstyledHtml).not.to.equal(html)
+      # Check upper-case tags are gone
+      expect(unstyledHtml).not.to.contain("<P")
+      expect(unstyledHtml).not.to.contain("<B")
+      # Check lists are unstyled with "type" attribute
+      expect(unstyledHtml).not.to.contain("<ul type")
+      # Check list items are unstyled
+      expect(unstyledHtml).not.to.contain("<li style")
+      expect(unstyledHtml).to.contain("<li>")
+      # Check list items are closed
+      # Note: there's still no solution for nested lists
+      expect(unstyledHtml).to.match(/flexible\.\s*<\/li>/)
+      # Check bold tags are converted to <strong>
+      expect(unstyledHtml).not.to.contain("<b>")
+      expect(unstyledHtml).to.contain("<strong>")
+      # Check breaks are closed
+      expect(unstyledHtml).not.to.contain("<br>")
+      expect(unstyledHtml).to.contain("<br/>")
+      

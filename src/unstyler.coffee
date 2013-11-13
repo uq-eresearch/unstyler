@@ -37,7 +37,27 @@
   # Higher order function for text removal operations
   removeOp = (regex) -> (text) ->
     text.replace(new RegExp(regex.source, 'mg'), '')
-
+    
+  transformOp = (regex, transformFunc) -> (text) ->
+    # Create function to replace segment with new content
+    overwriteOp = (i, j, str) -> 
+      # Function which inserts the string at the specified index
+      f = (t) -> t[0..(i-1)] + str + t[j..]
+      # Override toString so debugging is easier
+      f.toString = () -> "Overwrite @ "+i+"-"+j+": "+str
+      # Return function
+      f
+    i = 0
+    operations = []
+    while (m = text[i..].match(regex))
+      matchStr = m[0]
+      foundAt = i + m.index
+      untilIndex = foundAt + matchStr.length
+      operations.push(overwriteOp(foundAt, untilIndex, transformFunc(m)))
+      i = untilIndex
+    foldLeft operations.reverse(), text, (text, f) ->
+      f(text)
+  
   # Find a MS Word paragraphs that are actually list items
   locateLists = (text) ->
     re = /<p[^>]+style='[^']*mso-list\:[\s\S]+?<\/p>/m
@@ -129,6 +149,10 @@
     # get rid of unnecessary tag spans (comments and title)
     removeOp(/<!--(\w|\W)+?-->/)
     removeOp(/<title>(\w|\W)+?<\/title>/)
+    # Upper-case to lower conversion
+    transformOp(/(<\/?)(P|BR|B|I|STRONG|UL|OL|LI)([^>]*?>)/, (match) ->
+      match[1] + match[2].toLowerCase() + match[3]
+    )
     # Get rid of unnecessary tags
     removeOp(/<(meta|link|\/?o:|\/?style|\/?div|\/?st\d|\/?head|\/?html|body|\/?body|\/?span|!\[)[^>]*?>/)
     # Get rid of empty paragraph tags
@@ -139,21 +163,28 @@
     removeOp(/(\n\r){2,}/)
     # Fix mdash
     replaceOp(/Ã¢â‚¬â€œ/, "&mdash;")
-    #extract "mso-list" style to attributes
+    # Extract "mso-list" style to attributes
     convertLists
     # Filter textual ordered list points (real ones should now exist)
     replaceOp(/(?:<p[^>]*>(?:(?:&nbsp;)+\s*)?[a-z0-9]+\.)(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
     # Filter textual unordered list points (real ones should now exist)
     replaceOp(/(?:<p[^>]*>[·o])(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
     # Get rid of classes and styles
-    removeOp(/\s?class=([\'"][^\'"]*[\'"]|\w+)/)
-    removeOp(/\s+style='[^']+'/)
+    # (Note: "new RegExp" used to avoid bad editor highlighting)
+    removeOp(new RegExp('\\s?class=(?:\'[^\']*\'|"[^"]*"|\\w+)'))
+    removeOp(new RegExp('\\s+style=(?:\'[^\']*\'|"[^"]*")'))
+    # Get rid of list styles
+    replaceOp(new RegExp('(<[ou]l)\\s+type=(?:\'[^\']+\'|"[^""]+")'), "$1")
     # Replace bold with strong
-    replaceOp(/<b>([\s\S]*)<\/b>/, "<strong>$1</strong>")
+    replaceOp(/<b>([^<]*)<\/b>/, "<strong>$1</strong>")
     # Replace italic with em
-    replaceOp(/<i>([\s\S]*)<\/i>/, "<em>$1</em>")
-    # Convert remaining new lines to spaces
-    replaceOp(/(\r\n)/, ' ')
+    replaceOp(/<i>([^<]*)<\/i>/, "<em>$1</em>")
+    # Ensure breaks are closed
+    replaceOp(/<br>(?:<\/br>)?/, "<br/>")
+    # Ensure list items are closed
+    replaceOp(/(<li>[^<]*?)(?=\s*<li)/, "$1</li>")
+    # Convert \r\n to just \n
+    replaceOp(/(\r\n)/, '\n')
   ]
 
   unstyle = (html) ->

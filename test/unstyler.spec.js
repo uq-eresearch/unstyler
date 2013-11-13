@@ -40,7 +40,12 @@
       html = '<ul><li>a</li><li>b</li></ul>';
       return expect(unstyle(html)).to.equal(html);
     });
-    return it('should unmangle the test document', function() {
+    it('should leave preformatted text alone', function() {
+      var html;
+      html = '<ul><li><pre>a\n \nb\n</pre></li></ul>';
+      return expect(unstyle(html)).to.equal(html);
+    });
+    it('should unmangle modern Word HTML', function() {
       return fs.readFile(__dirname + '/fixture/word.html', {
         encoding: 'UTF-8'
       }, function(err, html) {
@@ -51,13 +56,35 @@
         unstyledHtml = unstyle(html);
         expect(unstyledHtml).not.to.equal(html);
         expect(unstyledHtml).to.contain("<strong>facilisis mollis sem</strong>");
-        expect(unstyledHtml).to.contain("<em>purus vestibulum at</em>");
+        expect(unstyledHtml).to.contain("<em>purus\nvestibulum at</em>");
         expect(unstyledHtml).to.contain("<ul><li>Vestibulum");
         expect(unstyledHtml).to.contain("<ul><li>Aliquam");
         expect(unstyledHtml).to.contain("varius congue.</li></ul></li>");
         expect(unstyledHtml).to.contain("<li>Interdum");
         expect(unstyledHtml).to.contain("<ul><li>Sed sit amet ornare leo.");
         return expect(unstyledHtml).to.contain("egestas urna.</li></ul></li></ul>");
+      });
+    });
+    return it('should unmangle older Word HTML with upper-case tags', function() {
+      return fs.readFile(__dirname + '/fixture/emule.html', {
+        encoding: 'UTF-8'
+      }, function(err, html) {
+        var unstyledHtml;
+        if (err) {
+          throw err;
+        }
+        unstyledHtml = unstyle(html);
+        expect(unstyledHtml).not.to.equal(html);
+        expect(unstyledHtml).not.to.contain("<P");
+        expect(unstyledHtml).not.to.contain("<B");
+        expect(unstyledHtml).not.to.contain("<ul type");
+        expect(unstyledHtml).not.to.contain("<li style");
+        expect(unstyledHtml).to.contain("<li>");
+        expect(unstyledHtml).to.match(/flexible\.\s*<\/li>/);
+        expect(unstyledHtml).not.to.contain("<b>");
+        expect(unstyledHtml).to.contain("<strong>");
+        expect(unstyledHtml).not.to.contain("<br>");
+        return expect(unstyledHtml).to.contain("<br/>");
       });
     });
   });
