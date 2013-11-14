@@ -42,7 +42,24 @@ describe '.unstyle', () ->
       expect(unstyledHtml).to.contain("<li>Interdum")
       expect(unstyledHtml).to.contain("<ul><li>Sed sit amet ornare leo.")
       expect(unstyledHtml).to.contain("egestas urna.</li></ul></li></ul>")
-  
+
+  it 'should unmangle modern Word HTML with 3-tier lists', () ->
+    fs.readFile __dirname+'/fixture/word_nested_lists.html', {
+      encoding: 'UTF-8'
+    }, (err, html) ->
+      throw err if (err)
+      unstyledHtml = unstyle(html)
+      expect(unstyledHtml).not.to.equal(html)
+      # Check bullets are stripped properly
+      for x in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+        expect(unstyledHtml).to.contain('<li>'+x)
+      expect(unstyledHtml).to.contain('<ol><li>A')
+      expect(unstyledHtml).to.contain('<ol><li>B')
+      expect(unstyledHtml).to.contain('<ol><li>C')
+      expect(unstyledHtml).to.contain('<ul><li>J')
+      expect(unstyledHtml).to.contain('<ul><li>K')
+      expect(unstyledHtml).to.contain('<ul><li>L')
+
   it 'should unmangle older Word HTML with upper-case tags', () ->
     fs.readFile __dirname+'/fixture/emule.html', { 
       encoding: 'UTF-8'

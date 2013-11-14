@@ -70,15 +70,15 @@
       msoList = matchStr.match(/l(\d+) level(\d+)/)
       rootId = parseInt(msoList[1])
       depth = parseInt(msoList[2])
-      listType =
-        if (/^<p[^>]*>\d+\.(&nbsp;\s*)+/.test(text[foundAt...untilIndex]))
+      listType = (str) ->
+        if /^<p[^>]*>(?:\s|&nbsp;)*[a-z0-9]+\.(&nbsp;\s*)+/.test(str)
           'ol'
         else
           'ul'
       indexes.push {
         start: foundAt
         end: untilIndex
-        type: listType
+        type: listType(text[foundAt...untilIndex])
         root: rootId
         depth: depth
       }
@@ -168,7 +168,7 @@
     # Filter textual ordered list points (real ones should now exist)
     replaceOp(/(?:<p[^>]*>(?:(?:&nbsp;)+\s*)?[a-z0-9]+\.)(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
     # Filter textual unordered list points (real ones should now exist)
-    replaceOp(/(?:<p[^>]*>[·o])(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
+    replaceOp(/(?:<p[^>]*>[·o�])(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
     # Get rid of classes and styles
     # (Note: "new RegExp" used to avoid bad editor highlighting)
     removeOp(new RegExp('\\s?class=(?:\'[^\']*\'|"[^"]*"|\\w+)'))
