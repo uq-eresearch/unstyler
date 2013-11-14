@@ -1,6 +1,7 @@
 # :indentSize=2:tabSize=2:noTabs=true:
 
 fs = require('fs')
+iconv = require('iconv-lite')
 expect = require('chai').expect
 coffeescript = require("coffee-script")
 unstyle = require(__dirname+"/../src/unstyler.coffee")
@@ -44,10 +45,9 @@ describe '.unstyle', () ->
       expect(unstyledHtml).to.contain("egestas urna.</li></ul></li></ul>")
 
   it 'should unmangle modern Word HTML with 3-tier lists', () ->
-    fs.readFile __dirname+'/fixture/word_nested_lists.html', {
-      encoding: 'UTF-8'
-    }, (err, html) ->
+    fs.readFile __dirname+'/fixture/word_nested_lists.html', (err, buffer) ->
       throw err if (err)
+      html = iconv.decode(buffer, 'windows-1252')
       unstyledHtml = unstyle(html)
       expect(unstyledHtml).not.to.equal(html)
       # Check bullets are stripped properly

@@ -168,7 +168,7 @@
     # Filter textual ordered list points (real ones should now exist)
     replaceOp(/(?:<p[^>]*>(?:(?:&nbsp;)+\s*)?[a-z0-9]+\.)(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
     # Filter textual unordered list points (real ones should now exist)
-    replaceOp(/(?:<p[^>]*>[·o�])(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
+    replaceOp(/(?:<p[^>]*>[·o§])(?:&nbsp;\s*)+([^<]+)<\/p>/, "$1")
     # Get rid of classes and styles
     # (Note: "new RegExp" used to avoid bad editor highlighting)
     removeOp(new RegExp('\\s?class=(?:\'[^\']*\'|"[^"]*"|\\w+)'))
