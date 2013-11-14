@@ -3,6 +3,10 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    clean: {
+      build: ['lib/', 'docs/'],
+      release: ['build/', '**/*~', '**/#*#', 'test/*.spec.js']
+    },
     coffee: {
       compile: {
         options: {
@@ -76,6 +80,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-docco');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -83,5 +88,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['test', 'coffee', 'uglify', 'docco']);
   grunt.registerTask('test', ['coffee:test', 'simplemocha']);
+  grunt.registerTask('prep-release', ['default', 'clean:release'])
 
 };
