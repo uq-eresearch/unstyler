@@ -1,6 +1,6 @@
 <script src="https://github.com/uq-eresearch/unstyler/releases/download/v{{site.currentVersion}}/unstyler.min.js"></script>
 <div class="row">
-  <div class="col-xs-12 col-sm-6">
+  <div class="col-xs-12 col-sm-12 col-md-4">
     <h4>Ugly HTML</h4>
     <textarea id="ugly-html"
       placeholder="Paste some ugly HTML here"
@@ -39,17 +39,15 @@ lectus turpis, eget condimentum justo lobortis quis. Vestibulum posuere mollis
 nulla eget egestas. Curabitur sit amet egestas urna.&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;
     </textarea>
   </div>
-  <div class="col-xs-12 col-sm-6">
+  <div class="col-xs-12 col-sm-6 col-md-4">
     <h4>Clean HTML</h4>
-    <pre id="clean-html-source" class="pre-scrollable"
-      rel="tooltip"
-      style="cursor: pointer;"
-      title="Click to show rendered">
+    <pre id="clean-html-source" class="pre-scrollable">
     </pre>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-4">
+    <h4>Rendered HTML</h4>
     <p id="clean-html"
-      rel="tooltip"
-      title="Click to show source"
-      style="height: 340px; width: 100%; overflow: auto; cursor: pointer;">
+      style="height: 340px; width: 100%; overflow: auto;">
     </p>
   </div>
 </div>
@@ -67,11 +65,6 @@ $(function() {
   $('#ugly-html').on('keyup', updateCleanHtml);
   // Run the first time
   updateCleanHtml();
-  // Provide toggling between clean source and HTML
-  $('#clean-html, #clean-html-source').on('click', function() {
-    $('#clean-html, #clean-html-source').toggle();
-  })
-  $('#clean-html-source').hide();
   // Explanitory tooltips
   $('[rel=tooltip]').tooltip();
 });
