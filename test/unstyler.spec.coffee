@@ -24,6 +24,11 @@ describe '.unstyle', () ->
   it 'should leave preformatted text alone', () ->
     html = '<ul><li><pre>a\n \nb\n</pre></li></ul>'
     expect(unstyle(html)).to.equal(html)
+
+  it 'should leave HTML5 figures alone', () ->
+    html = '<figure><img src="http://placekitten.com/50/50">'+
+      '<figcaption>Kitty!!!</figcaption></figure>'
+    expect(unstyle(html)).to.equal(html)
   
   it 'should unmangle modern Word HTML', () ->
     fs.readFile __dirname+'/fixture/word.html', { 
